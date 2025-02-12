@@ -51,7 +51,49 @@ public class Tests
         select.SelectByText("Silver (1 mm)");
         attributes.FindElement(By.XPath(".//input[@class='textbox']")).SendKeys("80");
 
-        //driver.Quit();
-        Assert.Pass();
+        IList<IWebElement> options = attributes.FindElements(By.XPath(".//ul[@class='option-list']/li"));
+        foreach(IWebElement option in options)
+        {
+            if (option.FindElement(By.XPath(".//label")).Text == "Star")
+            {
+                option.FindElement(By.XPath(".//input")).Click();
+                break;
+            }
+        }
+        IWebElement quantity = driver.FindElement(By.XPath("//input[@class='qty-input']"));
+        quantity.Clear();
+        quantity.SendKeys("26");
+
+        driver.FindElement(By.XPath("//input[@value='Add to cart']")).Click();
+        Thread.Sleep(500); // why does it not work without sleep
+        driver.FindElement(By.XPath("//input[@value='Add to wishlist']")).Click();
+
+        driver.FindElement(By.XPath("//a[@href='/wishlist']")).Click();
+
+        IList<IWebElement> itemsToBeAddedToCart = driver.FindElements(By.XPath("//tr[@class='cart-item-row']"));
+        foreach(IWebElement item in itemsToBeAddedToCart)
+        {
+            item.FindElement(By.XPath(".//input[@name='addtocart']")).Click();
+        }
+        
+        driver.FindElement(By.XPath("//input[@name='addtocartbutton']")).Click();
+
+
+        IList<IWebElement> cartTotalDetailRows = driver.FindElements(By.XPath("//table[@class='cart-total']/tbody/tr"));
+        bool subtotalIsCorrect = false;
+        foreach(IWebElement totalDetailRow in cartTotalDetailRows)
+        {
+            string subtotalType = totalDetailRow.FindElement(By.XPath(".//span[@class='nobr']")).Text;
+            if(subtotalType == "Sub-Total:")
+            {
+                string subtotal = totalDetailRow.FindElement(By.XPath(".//span[@class='product-price']")).Text;
+                if(subtotal == "1002600.00"){
+                    subtotalIsCorrect = true;
+                } else {
+                    Assert.Fail(); // subtotal is wrong
+                }
+            }
+        }
+        Assert.That(subtotalIsCorrect, Is.EqualTo(true)); // subtotal is actually present on page and is correct
     }
 }
