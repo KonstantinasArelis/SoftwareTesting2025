@@ -1,13 +1,10 @@
-namespace lab1;
-
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using System.Collections.Generic;
 using OpenQA.Selenium.Support.UI;
 
-// next task - no sleep, use implicit and excplicit waits
-
-public class Tests
+[TestFixture]
+public class Lab1
 {
     private IWebDriver driver;
 
@@ -23,6 +20,7 @@ public class Tests
     [Test]
     public void Test1()
     {   
+
         // 2. Click on 'Gift Cards' in the left menu.
         IWebElement giftcardLink = driver.FindElement(By.XPath("//a[@href='/gift-cards']"));
         giftcardLink.Click();
