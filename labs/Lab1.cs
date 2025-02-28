@@ -11,23 +11,7 @@ public class Lab1
     [SetUp]
     public void Setup()
     {
-        ChromeOptions options = new ChromeOptions();
-
-        string defaultUserDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "google-chrome");
-
-        try
-        {
-            if (Directory.Exists(defaultUserDataDir))
-            {
-                Directory.Delete(defaultUserDataDir, true);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Warning: Could not delete user data directory: {ex.Message}");
-        }
-
-        driver = new ChromeDriver(options);
+        driver = new ChromeDriver();
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(7);
         // 1. Open the website https://demowebshop.tricentis.com/.
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
