@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using OpenQA.Selenium.Support.UI;
 using System.IO;
 
+[TestFixture]
 public class Lab3
 {
     private IWebDriver driver;
@@ -19,13 +20,13 @@ public class Lab3
     public void Setup()
     {
         driver = new ChromeDriver();
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
         driver.Manage().Window.Maximize();
 
         driver.Navigate().GoToUrl("https://demowebshop.tricentis.com/");
     }
 
-    [Test]
+    [Test, Order(1)]
     public void UserCreation()
     {
         // 2.	Click "Log in"
@@ -46,18 +47,17 @@ public class Lab3
         registrationForm.FindElement(By.Id("register-button")).Click();
 
         driver.FindElement(By.ClassName("register-continue-button")).Click();
-
-        driver.Quit();
     }
 
-    [Test]
+    [Test, Order(2)]
     public void Test1()
     {
         //  2.	Click "Log in"
         driver.FindElement(By.XPath("//a[@href='/login']")).Click();
 
         // 3.	Fill in the "Email" and "Password" fields and click "Log in"
-        driver.FindElement(By.Id("Email")).SendKeys("18bc074b-3df9-47da-9ea5-5d95eb0104b5@test.com");
+        // user email with already existing address - 18bc074b-3df9-47da-9ea5-5d95eb0104b5@test.com
+        driver.FindElement(By.Id("Email")).SendKeys(userEmail);
         driver.FindElement(By.Id("Password")).SendKeys(password);
         driver.FindElement(By.ClassName("login-button")).Click();
 
@@ -105,12 +105,12 @@ public class Lab3
             driver.FindElement(By.Id("BillingNewAddress_ZipPostalCode")).SendKeys("12345");
             driver.FindElement(By.Id("BillingNewAddress_PhoneNumber")).SendKeys("123456789");
             driver.FindElement(By.ClassName("new-address-next-step-button")).Click();
-            driver.FindElement(By.ClassName("payment-method-next-step-button")).Click();
+            //driver.FindElement(By.ClassName("payment-method-next-step-button")).Click();
         }
-
+        Console.WriteLine("trying to click payment method next");
         //  9.	In "Payment Method", click "Continue"
         driver.FindElement(By.ClassName("payment-method-next-step-button")).Click();
-
+        Console.WriteLine("trying to click payment info next");
         //  10.	In "Payment Information", click "Continue"
         driver.FindElement(By.ClassName("payment-info-next-step-button")).Click();
 
@@ -120,7 +120,14 @@ public class Lab3
         //  12.	Ensure the order is successfully placed.
         var orderCompletionMessage = driver.FindElement(By.XPath("//div[@class='section order-completed']/div/strong")).Text;
         Assert.That(orderCompletionMessage, Is.EqualTo("Your order has been successfully processed!"));
+    }
 
-        driver.Quit();
+    [TearDown]
+    public void TearDown()
+    {
+        if (driver != null)
+        {
+            driver.Quit();
+        }
     }
 }
