@@ -9,14 +9,14 @@ using OpenQA.Selenium.Support.UI;
 public class Lab2 
 {
     private IWebDriver driver;
-
+    private IJavaScriptExecutor js;
     [SetUp]
     public void Setup()
     {
         driver = new ChromeDriver();
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
         driver.Manage().Window.Maximize();
-
+        js = (IJavaScriptExecutor)driver;
         // 1. Open https://demoqa.com/.
         driver.Navigate().GoToUrl("https://demoqa.com/");
     }
@@ -32,19 +32,25 @@ public class Lab2
         {
             if(category.FindElement(By.XPath(".//h5")).Text == "Widgets")
             {
+                js.ExecuteScript("arguments[0].scrollIntoView(true);", category);
+                
                 category.Click();
                 break;
             } 
         }
-
+        
         // 4. Choose the "Progress Bar" menu item.
-        driver.FindElement(By.XPath("//span[text()='Progress Bar']")).Click();
-
+        var progressBarElement = driver.FindElement(By.XPath("//span[text()='Progress Bar']"));
+        js.ExecuteScript("arguments[0].scrollIntoView(true);", progressBarElement);
+        progressBarElement.Click();
         // 5. Click the "Start" button.
-        driver.FindElement(By.XPath("//button[@id='startStopButton']")).Click();
+        var startStopButton = driver.FindElement(By.XPath("//button[@id='startStopButton']"));
+        js.ExecuteScript("arguments[0].scrollIntoView(true);", startStopButton);
+        startStopButton.Click();
 
         // 6. Wait until it reaches 100% and then click "Reset."
         IWebElement progressBar = driver.FindElement(By.XPath("//div[@role='progressbar']"));
+        js.ExecuteScript("arguments[0].scrollIntoView(true);", progressBar);
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         wait.Until(driverInstance => progressBar.Text == "100%");
         driver.FindElement(By.XPath("//button[@id='resetButton']")).Click();
@@ -62,13 +68,16 @@ public class Lab2
         {
             if(category.FindElement(By.XPath(".//h5")).Text == "Elements")
             {
+                js.ExecuteScript("arguments[0].scrollIntoView(true);", category);
                 category.Click();
                 break;
             } 
         }
 
         // 4. Choose the "Web Tables" menu item.
-        driver.FindElement(By.XPath("//span[text()='Web Tables']")).Click();
+        var webTablesElement = driver.FindElement(By.XPath("//span[text()='Web Tables']"));
+        js.ExecuteScript("arguments[0].scrollIntoView(true);", webTablesElement);
+        webTablesElement.Click();
 
         // 5. Add enough elements to create a second page in the pagination.
         IWebElement pageCountElement = driver.FindElement(By.XPath("//span[@class='-totalPages']"));
@@ -76,7 +85,10 @@ public class Lab2
         IWebElement app = driver.FindElement(By.XPath("//div[@id='app']"));
         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1));
         while(pageCountElement.Text == initalPageCount){
-            driver.FindElement(By.XPath("//button[@id='addNewRecordButton']")).Click();
+            wait.Until(driverInstance => app.GetAttribute("aria-hidden") == null); // make sure input fields are not visible
+            var addNewButton = driver.FindElement(By.XPath("//button[@id='addNewRecordButton']"));
+            js.ExecuteScript("arguments[0].scrollIntoView(true);", addNewButton);
+            addNewButton.Click();
             wait.Until(driverInstance => app.GetAttribute("aria-hidden") != null); // make sure input fields have become visible
             driver.FindElement(By.XPath("//input[@id='firstName']")).SendKeys("Test first name");
             driver.FindElement(By.XPath("//input[@id='lastName']")).SendKeys("Test last name");
