@@ -16,7 +16,7 @@ namespace Lab3
         private static IEnumerable<string[]> TestDataProvider()
         {
             string BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string[] files = Directory.GetFiles(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(BaseDirectory).ToString()).ToString()).ToString()).ToString() + "/data/", "*.txt");
+            string[] files = Directory.GetFiles(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(BaseDirectory).ToString()).ToString()).ToString()).ToString() + "/Lab3/data/", "*.txt");
             foreach(string file in files)
             {
                 yield return File.ReadAllLines(file);
